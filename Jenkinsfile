@@ -6,9 +6,9 @@ pipeline {
    stages{
     stage('CompileandRunSonarAnalysis') {
             steps {	
-		sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=qabuggywebapp  -Dsonar.organization=qabuggywebapp  -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=c04c2993c61c01642cdcbd6cf105874f625cb6e8'
+		sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=qabuggywebapp -Dsonar.organization=qabuggywebapp -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=c04c2993c61c01642cdcbd6cf105874f625cb6e8'
 			}
-    }
+     }
 
 	stage('RunSCAAnalysisUsingSnyk') {
             steps {		
@@ -16,9 +16,9 @@ pipeline {
 					sh 'mvn snyk:test -fn'
 				}
 			}
-    }
-
-	stage('Build') { 
+    }		
+  
+        stage('Build') { 
             steps { 
                withDockerRegistry([credentialsId: "dockerlogin", url: ""]) {
                  script{
@@ -26,9 +26,9 @@ pipeline {
                  }
                }
             }
-    }
-
-	stage('Push') {
+    } 	    
+  
+        stage('Push') {
             steps {
                 script{
                     docker.withRegistry('https://816069155550.dkr.ecr.us-west-2.amazonaws.com', 'ecr:us-west-2:aws-credentials') {
@@ -37,8 +37,9 @@ pipeline {
                 }
             }
     	}
+	
 	   
-	stage('Kubernetes Deployment of QABUG Bugg Web Application') {
+	stage('Kubernetes Deployment of ASG Bugg Web Application') {
 	   steps {
 	      withKubeConfig([credentialsId: 'kubelogin']) {
 		  sh('kubectl delete all --all -n devsecops')
